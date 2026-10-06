@@ -3,316 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpinionHub — Площадка мнений</title>
+    <title>Сайт Усынина Димы</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-color: #f0f6fc;
+            --text-muted: #8b949e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0b0e14;
-            color: #e2e8f0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Navbar */
+        /* Шапка */
         header {
-            background-color: #151d2a;
-            border-bottom: 1px solid #232d3f;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 10px 20px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            align-items: center;
+            padding: 18px 40px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
         }
+
         .logo {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
-            color: #ff4500;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: var(--primary);
             cursor: pointer;
+            letter-spacing: 0.5px;
         }
-        .logo span { color: #38bdf8; }
 
-        .search-bar {
-            flex-grow: 1;
-            max-width: 500px;
-        }
-        .search-bar input {
-            width: 100%;
-            background: #0b0e14;
-            border: 1px solid #232d3f;
-            padding: 8px 14px;
-            border-radius: 20px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
-        .search-bar input:focus { border-color: #ff4500; }
-
-        .auth-buttons {
+        .nav-buttons {
             display: flex;
+            gap: 12px;
             align-items: center;
-            gap: 10px;
         }
+
         .btn {
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
         }
+
         .btn-outline {
             background: transparent;
-            color: #e2e8f0;
-            border: 1px solid #334155;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
         }
-        .btn-outline:hover { border-color: #ff4500; color: #ff4500; }
-        .btn-primary {
-            background: #ff4500;
-            color: #fff;
-        }
-        .btn-primary:hover { background: #e03d00; }
 
-        .user-profile-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #1e293b;
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid #334155;
+        .btn-outline:hover {
+            background: #21262d;
+            border-color: #8b949e;
         }
-        .user-avatar-mini {
-            width: 26px;
-            height: 26px;
-            background: #ff4500;
-            color: #fff;
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Главная область */
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #8b949e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            max-width: 800px;
+            line-height: 1.2;
+        }
+
+        /* Секция профиля */
+        .profile-container {
+            display: none;
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .profile-avatar-display {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
+            font-size: 42px;
+            background-color: var(--primary);
+            background-size: cover;
+            background-position: center;
+            border: 3px solid var(--border-color);
         }
 
-        /* Layout */
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            margin: 20px auto;
-            padding: 0 15px;
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
+        .profile-username {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        /* Post Creation Trigger */
-        .create-post-box {
-            background: #151d2a;
-            border: 1px solid #232d3f;
-            border-radius: 12px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .create-post-input {
-            flex-grow: 1;
-            background: #0b0e14;
-            border: 1px solid #232d3f;
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: #94a3b8;
+        .profile-role {
             font-size: 14px;
-            cursor: pointer;
+            color: var(--text-muted);
+            margin-bottom: 25px;
         }
-        .create-post-input:hover { border-color: #334155; color: #cbd5e1; }
 
-        /* Feed & Cards */
-        .feed { display: flex; flex-direction: column; gap: 15px; }
-
-        .post-card {
-            background: #151d2a;
-            border: 1px solid #232d3f;
+        /* Выбор аватарки */
+        .avatar-section {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            display: flex;
-            overflow: hidden;
-            transition: border-color 0.2s;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
         }
-        .post-card:hover { border-color: #334155; }
 
-        .vote-sidebar {
-            width: 48px;
-            background: rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px 0;
-            gap: 4px;
+        .avatar-section h4 {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
         }
-        .vote-btn {
-            background: none;
-            border: none;
-            color: #64748b;
-            font-size: 18px;
+
+        .preset-avatars {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .preset-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: #21262d;
+            font-size: 20px;
             cursor: pointer;
-            transition: color 0.15s;
+            transition: transform 0.1s;
         }
-        .vote-btn:hover { color: #ff4500; }
-        .vote-btn.up.active { color: #ff4500; }
-        .vote-btn.down.active { color: #6366f1; }
-        .vote-score { font-size: 13px; font-weight: 700; color: #f8fafc; }
 
-        .post-content { padding: 14px 18px; flex-grow: 1; }
-        .post-header { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #64748b; margin-bottom: 8px; }
-        .post-category { background: #232d3f; color: #38bdf8; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-        .post-author { color: #94a3b8; font-weight: 600; }
-        .post-title { font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; line-height: 1.3; }
-        .post-text { font-size: 14px; color: #cbd5e1; line-height: 1.5; margin-bottom: 12px; white-space: pre-wrap; }
-        
-        .post-footer { display: flex; gap: 15px; font-size: 13px; color: #64748b; }
-        .post-action-btn { background: none; border: none; color: #64748b; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .post-action-btn:hover { color: #38bdf8; }
-
-        /* Sidebar Right */
-        .sidebar-right { display: flex; flex-direction: column; gap: 15px; }
-        .widget-box {
-            background: #151d2a;
-            border: 1px solid #232d3f;
-            border-radius: 12px;
-            padding: 16px;
+        .preset-btn:hover {
+            transform: scale(1.15);
+            border-color: var(--primary);
         }
-        .widget-title { font-size: 15px; font-weight: 700; color: #f8fafc; margin-bottom: 10px; }
-        .rules-list { font-size: 13px; color: #94a3b8; padding-left: 18px; line-height: 1.6; }
 
-        /* Modals */
+        /* Модальные окна */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 15px;
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
         .modal {
-            background: #151d2a;
-            border: 1px solid #232d3f;
-            border-radius: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
             width: 100%;
-            max-width: 480px;
-            padding: 24px;
+            max-width: 380px;
             position: relative;
         }
-        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 15px; color: #f8fafc; }
-        .close-modal { position: absolute; top: 18px; right: 20px; font-size: 22px; cursor: pointer; color: #64748b; }
-        .close-modal:hover { color: #fff; }
 
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
         .form-control {
             width: 100%;
-            background: #0b0e14;
-            border: 1px solid #232d3f;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 10px;
             color: #fff;
             font-size: 14px;
             outline: none;
         }
-        .form-control:focus { border-color: #ff4500; }
-        textarea.form-control { resize: vertical; min-height: 100px; }
 
-        .modal-switch { text-align: center; margin-top: 14px; font-size: 13px; color: #94a3b8; }
-        .modal-switch a { color: #ff4500; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .form-control:focus {
+            border-color: var(--primary);
+        }
 
-        /* Comments Section inside Modal */
-        .comments-section { margin-top: 20px; border-top: 1px solid #232d3f; padding-top: 15px; }
-        .comment-item { background: #0b0e14; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 13px; }
-        .comment-author { color: #ff4500; font-weight: 700; margin-bottom: 4px; }
-        .comment-text { color: #cbd5e1; }
+        .modal-switch {
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
 
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-            .sidebar-right { display: none; }
+        .modal-switch span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
+    <!-- Шапка -->
     <header>
-        <div class="logo" onclick="renderFeed()">
-            Opinion<span>Hub</span>
-        </div>
-        
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Поиск по мнениям и темам..." oninput="renderFeed()">
-        </div>
-
-        <div id="authNav" class="auth-buttons">
-            <!-- Rendered by JS -->
+        <div class="logo" onclick="showMainView()">Усынин Дима</div>
+        <div class="nav-buttons" id="navButtons">
+            <!-- Кнопки обновляются через JS -->
         </div>
     </header>
 
-    <div class="container">
-        <main>
-            <!-- Create Post Bar -->
-            <div class="create-post-box">
-                <div class="user-avatar-mini" id="myAvatar">?</div>
-                <div class="create-post-input" onclick="handleCreatePostClick()">
-                    Поделитесь своим мнением или задайте вопрос...
+    <!-- Основное содержимое -->
+    <main>
+        <!-- Главный экран -->
+        <div id="mainView" class="hero-title">
+            Сайт сделан Усыниным Димой
+        </div>
+
+        <!-- Профиль пользователя -->
+        <div id="profileView" class="profile-container">
+            <div class="profile-avatar-display" id="profileAvatar">👤</div>
+            <div class="profile-username" id="profileUsername">Логин</div>
+            <div class="profile-role">Участник</div>
+
+            <!-- Настройка аватарки -->
+            <div class="avatar-section">
+                <h4>Сменить аватарку (выберите или вставьте ссылку):</h4>
+                
+                <div class="preset-avatars">
+                    <button class="preset-btn" onclick="setPresetAvatar('😎')">😎</button>
+                    <button class="preset-btn" onclick="setPresetAvatar('🚀')">🚀</button>
+                    <button class="preset-btn" onclick="setPresetAvatar('🔥')">🔥</button>
+                    <button class="preset-btn" onclick="setPresetAvatar('👾')">👾</button>
+                    <button class="preset-btn" onclick="setPresetAvatar('🐱')">🐱</button>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" id="avatarUrlInput" class="form-control" placeholder="Ссылка на картинку (https://...)" onchange="setImageAvatar(this.value)">
                 </div>
             </div>
 
-            <!-- Feed -->
-            <div class="feed" id="feed">
-                <!-- Posts rendered dynamically -->
-            </div>
-        </main>
+            <button class="btn btn-outline" style="width: 100%; color: #f87171;" onclick="logout()">Выйти из аккаунта</button>
+        </div>
+    </main>
 
-        <aside class="sidebar-right">
-            <div class="widget-box">
-                <div class="widget-title">📌 О площадке OpinionHub</div>
-                <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 10px;">
-                    Сообщество, где каждый может открыто поделиться мнением, обсудить новости или задать вопрос.
-                </p>
-                <p style="font-size: 12px; color: #64748b;">Чтобы публиковать посты и оставлять комментарии, пройдите быструю регистрацию.</p>
-            </div>
-
-            <div class="widget-box">
-                <div class="widget-title">📜 Правила сообщества</div>
-                <ol class="rules-list">
-                    <li>Будьте вежливы к чужому мнению.</li>
-                    <li>Без спама и рекламы.</li>
-                    <li>Публикуйте записи в правильные категории.</li>
-                </ol>
-            </div>
-        </aside>
-    </div>
-
-    <!-- Auth Modal (Login / Register) -->
+    <!-- Модальное окно (Вход / Регистрация) -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
-            <span class="close-modal" onclick="closeModal('authModal')">&times;</span>
-            <div class="modal-title" id="authModalTitle">Вход в аккаунт</div>
+            <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            <div class="modal-title" id="modalTitle">Вход</div>
             
             <form onsubmit="handleAuthSubmit(event)">
                 <div class="form-group">
-                    <label>Логин / Никнейм</label>
-                    <input type="text" id="authUsername" class="form-control" placeholder="Введите логин" required minlength="3" maxlength="15">
+                    <label>Логин</label>
+                    <input type="text" id="authLogin" class="form-control" placeholder="Введите логин" required minlength="3">
                 </div>
                 <div class="form-group">
                     <label>Пароль</label>
@@ -322,121 +329,33 @@
             </form>
 
             <div class="modal-switch" id="authSwitchText">
-                Ещё нет аккаунта? <a onclick="toggleAuthMode(true)">Зарегистрироваться</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Create Post Modal -->
-    <div class="modal-overlay" id="createPostModal">
-        <div class="modal" style="max-width: 600px;">
-            <span class="close-modal" onclick="closeModal('createPostModal')">&times;</span>
-            <div class="modal-title">Создать новый пост</div>
-            
-            <form onsubmit="handlePostSubmit(event)">
-                <div class="form-group">
-                    <label>Категория / Сообщество</label>
-                    <select id="postCategory" class="form-control" required>
-                        <option value="f/мысли">f/мысли</option>
-                        <option value="f/технологии">f/технологии</option>
-                        <option value="f/игры">f/игры</option>
-                        <option value="f/кино">f/кино</option>
-                        <option value="f/вопросы">f/вопросы</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Заголовок поста</label>
-                    <input type="text" id="postTitle" class="form-control" placeholder="Коротко выразите главную суть..." required maxlength="100">
-                </div>
-                <div class="form-group">
-                    <label>Текст поста (ваше мнение)</label>
-                    <textarea id="postContent" class="form-control" placeholder="Распишите подробнее ваши мысли..." required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Опубликовать</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- View Post & Comments Modal -->
-    <div class="modal-overlay" id="viewPostModal">
-        <div class="modal" style="max-width: 650px;">
-            <span class="close-modal" onclick="closeModal('viewPostModal')">&times;</span>
-            <div id="viewPostContent">
-                <!-- Loaded dynamically -->
+                Ещё нет аккаунта? <span onclick="toggleAuthMode(true)">Зарегистрироваться</span>
             </div>
         </div>
     </div>
 
     <script>
-        // State Storage
-        let users = JSON.parse(localStorage.getItem('oh_users')) || [];
-        let currentUser = JSON.parse(localStorage.getItem('oh_currentUser')) || null;
-        let posts = JSON.parse(localStorage.getItem('oh_posts')) || [];
-
+        // Данные приложения
+        let users = JSON.parse(localStorage.getItem('usynin_users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('usynin_currentUser')) || null;
         let isRegisterMode = false;
-        let activePostIdForComment = null;
 
-        // Initialize Default Posts if empty
-        if (posts.length === 0) {
-            posts = [
-                {
-                    id: 1,
-                    author: "Alex_Tech",
-                    category: "f/технологии",
-                    title: "ИИ скоро заменит простых программистов или это просто хайп?",
-                    content: "Смортю на развитие нейросетей и код-помощников. С одной стороны они круто ускоряют работу, с другой — порог входа в профессию сильно повышается. Как думаете, стоит ли начинающим бояться?",
-                    score: 12,
-                    userVotes: {},
-                    comments: [
-                        { author: "DevPro", text: "Рутинный код заменят, а вот архитектуру и логику приложения всё равно продумывает человек." }
-                    ],
-                    date: "2 часа назад"
-                },
-                {
-                    id: 2,
-                    author: "Gamer99",
-                    category: "f/игры",
-                    title: "Графика в играх уперлась в потолок. Теперь важен только геймплей",
-                    content: "Посмотрите на последние релизы. Картинка красивая, а играть скучно через 3 часа. Раньше игры цепляли атмосферой и механикой. Согласны?",
-                    score: 8,
-                    userVotes: {},
-                    comments: [],
-                    date: "5 часов назад"
-                }
-            ];
-            savePosts();
-        }
-
-        function savePosts() {
-            localStorage.setItem('oh_posts', JSON.stringify(posts));
-        }
-
-        function saveUsers() {
-            localStorage.setItem('oh_users', JSON.stringify(users));
-        }
-
+        // Инициализация
         function init() {
-            updateAuthUI();
-            renderFeed();
+            updateNav();
+            showMainView();
         }
 
-        // Auth UI & Modals Logic
-        function updateAuthUI() {
-            const nav = document.getElementById('authNav');
-            const avatar = document.getElementById('myAvatar');
+        // Обновление навигации
+        function updateNav() {
+            const nav = document.getElementById('navButtons');
 
             if (currentUser) {
-                const firstLetter = currentUser.username.charAt(0).toUpperCase();
-                avatar.textContent = firstLetter;
                 nav.innerHTML = `
-                    <div class="user-profile-badge">
-                        <div class="user-avatar-mini">${firstLetter}</div>
-                        <span style="font-size: 13px; font-weight: 600; color: #f8fafc;">u/${currentUser.username}</span>
-                    </div>
-                    <button class="btn btn-outline" onclick="logout()">Выйти</button>
+                    <button class="btn btn-outline" onclick="showProfileView()">Профиль (${currentUser.login})</button>
+                    <button class="btn btn-primary" onclick="logout()">Выйти</button>
                 `;
             } else {
-                avatar.textContent = '?';
                 nav.innerHTML = `
                     <button class="btn btn-outline" onclick="openAuthModal(false)">Войти</button>
                     <button class="btn btn-primary" onclick="openAuthModal(true)">Регистрация</button>
@@ -444,258 +363,129 @@
             }
         }
 
-        function openAuthModal(registerMode = false) {
+        // Навигация по экранам
+        function showMainView() {
+            document.getElementById('mainView').style.display = 'block';
+            document.getElementById('profileView').style.display = 'none';
+        }
+
+        function showProfileView() {
+            if (!currentUser) return;
+
+            document.getElementById('mainView').style.display = 'none';
+            document.getElementById('profileView').style.display = 'block';
+            
+            document.getElementById('profileUsername').textContent = currentUser.login;
+            renderAvatar();
+        }
+
+        // Рендер аватарки
+        function renderAvatar() {
+            const avatarDiv = document.getElementById('profileAvatar');
+            const avatarUrlInput = document.getElementById('avatarUrlInput');
+
+            if (currentUser.avatar && currentUser.avatar.startsWith('http')) {
+                avatarDiv.style.backgroundImage = `url('${currentUser.avatar}')`;
+                avatarDiv.textContent = '';
+                avatarUrlInput.value = currentUser.avatar;
+            } else {
+                avatarDiv.style.backgroundImage = 'none';
+                avatarDiv.textContent = currentUser.avatar || '👤';
+                avatarUrlInput.value = '';
+            }
+        }
+
+        // Смена аватара
+        function setPresetAvatar(emoji) {
+            if (!currentUser) return;
+            currentUser.avatar = emoji;
+            saveCurrentUserData();
+            renderAvatar();
+        }
+
+        function setImageAvatar(url) {
+            if (!currentUser || !url.trim()) return;
+            currentUser.avatar = url.trim();
+            saveCurrentUserData();
+            renderAvatar();
+        }
+
+        function saveCurrentUserData() {
+            // Сохраняем и в текущей сессии, и в общем списке юзеров
+            localStorage.setItem('usynin_currentUser', JSON.stringify(currentUser));
+            
+            const userIndex = users.findIndex(u => u.login.toLowerCase() === currentUser.login.toLowerCase());
+            if (userIndex !== -1) {
+                users[userIndex].avatar = currentUser.avatar;
+                localStorage.setItem('usynin_users', JSON.stringify(users));
+            }
+        }
+
+        // Авторизация и регистрация
+        function openAuthModal(registerMode) {
             toggleAuthMode(registerMode);
             document.getElementById('authModal').classList.add('active');
         }
 
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+            document.getElementById('authLogin').value = '';
+            document.getElementById('authPassword').value = '';
+        }
+
         function toggleAuthMode(registerMode) {
             isRegisterMode = registerMode;
-            document.getElementById('authModalTitle').textContent = isRegisterMode ? 'Регистрация' : 'Вход в аккаунт';
+            document.getElementById('modalTitle').textContent = isRegisterMode ? 'Регистрация' : 'Вход';
             document.getElementById('authSubmitBtn').textContent = isRegisterMode ? 'Зарегистрироваться' : 'Войти';
             
-            const switchBox = document.getElementById('authSwitchText');
+            const switchText = document.getElementById('authSwitchText');
             if (isRegisterMode) {
-                switchBox.innerHTML = `Уже есть аккаунт? <a onclick="toggleAuthMode(false)">Войти</a>`;
+                switchText.innerHTML = `Уже есть аккаунт? <span onclick="toggleAuthMode(false)">Войти</span>`;
             } else {
-                switchBox.innerHTML = `Ещё нет аккаунта? <a onclick="toggleAuthMode(true)">Зарегистрироваться</a>`;
+                switchText.innerHTML = `Ещё нет аккаунта? <span onclick="toggleAuthMode(true)">Зарегистрироваться</span>`;
             }
         }
 
         function handleAuthSubmit(e) {
             e.preventDefault();
-            const username = document.getElementById('authUsername').value.trim();
+            const login = document.getElementById('authLogin').value.trim();
             const password = document.getElementById('authPassword').value.trim();
 
             if (isRegisterMode) {
-                const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-                if (exists) {
+                const userExists = users.some(u => u.login.toLowerCase() === login.toLowerCase());
+                if (userExists) {
                     alert('Пользователь с таким логином уже существует!');
                     return;
                 }
-                const newUser = { username, password };
+
+                const newUser = { login, password, avatar: '😎' };
                 users.push(newUser);
-                saveUsers();
-                currentUser = { username };
-                localStorage.setItem('oh_currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('usynin_users', JSON.stringify(users));
+                
+                currentUser = newUser;
             } else {
-                const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+                const user = users.find(u => u.login.toLowerCase() === login.toLowerCase() && u.password === password);
                 if (!user) {
                     alert('Неверный логин или пароль!');
                     return;
                 }
-                currentUser = { username: user.username };
-                localStorage.setItem('oh_currentUser', JSON.stringify(currentUser));
+                currentUser = user;
             }
 
-            document.getElementById('authUsername').value = '';
-            document.getElementById('authPassword').value = '';
-            closeModal('authModal');
-            updateAuthUI();
+            localStorage.setItem('usynin_currentUser', JSON.stringify(currentUser));
+            closeAuthModal();
+            updateNav();
+            showProfileView();
         }
 
         function logout() {
             currentUser = null;
-            localStorage.removeItem('oh_currentUser');
-            updateAuthUI();
+            localStorage.removeItem('usynin_currentUser');
+            updateNav();
+            showMainView();
         }
 
-        // Post Creation Logic
-        function handleCreatePostClick() {
-            if (!currentUser) {
-                alert('Чтобы опубликовать мнение, необходимо зарегистрироваться или войти в аккаунт!');
-                openAuthModal(false);
-                return;
-            }
-            document.getElementById('createPostModal').classList.add('active');
-        }
-
-        function handlePostSubmit(e) {
-            e.preventDefault();
-            if (!currentUser) return;
-
-            const category = document.getElementById('postCategory').value;
-            const title = document.getElementById('postTitle').value.trim();
-            const content = document.getElementById('postContent').value.trim();
-
-            const newPost = {
-                id: Date.now(),
-                author: currentUser.username,
-                category,
-                title,
-                content,
-                score: 1,
-                userVotes: { [currentUser.username]: 1 },
-                comments: [],
-                date: 'только что'
-            };
-
-            posts.unshift(newPost);
-            savePosts();
-
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postContent').value = '';
-            closeModal('createPostModal');
-            renderFeed();
-        }
-
-        // Voting Logic
-        function vote(postId, delta, event) {
-            if (event) event.stopPropagation();
-
-            if (!currentUser) {
-                alert('Голосовать могут только зарегистрированные пользователи!');
-                openAuthModal(false);
-                return;
-            }
-
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            if (!post.userVotes) post.userVotes = {};
-
-            const currentVote = post.userVotes[currentUser.username] || 0;
-
-            if (currentVote === delta) {
-                // Cancel vote
-                post.score -= delta;
-                delete post.userVotes[currentUser.username];
-            } else {
-                // Change vote
-                post.score += (delta - currentVote);
-                post.userVotes[currentUser.username] = delta;
-            }
-
-            savePosts();
-            renderFeed();
-        }
-
-        // Rendering Feed
-        function renderFeed() {
-            const feed = document.getElementById('feed');
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-
-            feed.innerHTML = '';
-
-            const filteredPosts = posts.filter(p => 
-                p.title.toLowerCase().includes(searchVal) || 
-                p.content.toLowerCase().includes(searchVal) ||
-                p.category.toLowerCase().includes(searchVal)
-            );
-
-            if (filteredPosts.length === 0) {
-                feed.innerHTML = `<div style="text-align: center; color: #64748b; padding: 40px;">Постов пока нет или ничего не найдено 🔍</div>`;
-                return;
-            }
-
-            filteredPosts.forEach(post => {
-                const myVote = currentUser && post.userVotes ? (post.userVotes[currentUser.username] || 0) : 0;
-
-                const card = document.createElement('div');
-                card.className = 'post-card';
-                card.innerHTML = `
-                    <div class="vote-sidebar">
-                        <button class="vote-btn up ${myVote === 1 ? 'active' : ''}" onclick="vote(${post.id}, 1, event)">▲</button>
-                        <span class="vote-score">${post.score}</span>
-                        <button class="vote-btn down ${myVote === -1 ? 'active' : ''}" onclick="vote(${post.id}, -1, event)">▼</button>
-                    </div>
-                    <div class="post-content" onclick="openViewPostModal(${post.id})">
-                        <div class="post-header">
-                            <span class="post-category">${post.category}</span>
-                            <span>•</span>
-                            <span>Автор: <strong class="post-author">u/${post.author}</strong></span>
-                            <span>•</span>
-                            <span>${post.date}</span>
-                        </div>
-                        <h2 class="post-title">${escapeHtml(post.title)}</h2>
-                        <p class="post-text">${escapeHtml(post.content)}</p>
-                        <div class="post-footer">
-                            <button class="post-action-btn">💬 ${post.comments ? post.comments.length : 0} комментариев</button>
-                        </div>
-                    </div>
-                `;
-                feed.appendChild(card);
-            });
-        }
-
-        // View Post Modal & Commenting
-        function openViewPostModal(postId) {
-            activePostIdForComment = postId;
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            const container = document.getElementById('viewPostContent');
-            const commentsHtml = (post.comments || []).map(c => `
-                <div class="comment-item">
-                    <div class="comment-author">u/${escapeHtml(c.author)}</div>
-                    <div class="comment-text">${escapeHtml(c.text)}</div>
-                </div>
-            `).join('');
-
-            container.innerHTML = `
-                <div class="post-header">
-                    <span class="post-category">${post.category}</span>
-                    <span>•</span>
-                    <span class="post-author">u/${post.author}</span>
-                </div>
-                <h2 class="post-title" style="margin-top: 8px;">${escapeHtml(post.title)}</h2>
-                <p class="post-text" style="margin-top: 10px;">${escapeHtml(post.content)}</p>
-
-                <div class="comments-section">
-                    <h3 style="font-size: 15px; margin-bottom: 12px; color: #f8fafc;">Комментарии (${post.comments.length})</h3>
-                    
-                    ${currentUser ? `
-                        <form onsubmit="handleAddComment(event)" style="margin-bottom: 15px;">
-                            <input type="text" id="commentInput" class="form-control" placeholder="Напишите ваш комментарий..." required style="margin-bottom: 8px;">
-                            <button type="submit" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">Отправить</button>
-                        </form>
-                    ` : `
-                        <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Войдите в аккаунт, чтобы оставить комментарий.</p>
-                    `}
-
-                    <div id="commentsList">
-                        ${commentsHtml || '<div style="color: #64748b; font-size: 13px;">Пока нет комментариев. Будьте первым!</div>'}
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('viewPostModal').classList.add('active');
-        }
-
-        function handleAddComment(e) {
-            e.preventDefault();
-            if (!currentUser || !activePostIdForComment) return;
-
-            const text = document.getElementById('commentInput').value.trim();
-            if (!text) return;
-
-            const post = posts.find(p => p.id === activePostIdForComment);
-            if (post) {
-                if (!post.comments) post.comments = [];
-                post.comments.push({
-                    author: currentUser.username,
-                    text: text
-                });
-                savePosts();
-                openViewPostModal(activePostIdForComment); // Reload modal
-                renderFeed(); // Update comment count in feed
-            }
-        }
-
-        // Helpers
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
+        // Запуск
         init();
     </script>
 </body>
