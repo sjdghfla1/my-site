@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт Усынина Димы</title>
+    <title>Тетрис Сайт</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -28,22 +28,39 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            user-select: none;
         }
 
+        /* Шапка */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
+            padding: 12px 20px;
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
         }
 
-        .logo {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            cursor: pointer;
+        /* Реальный счетчик посещений */
+        .real-counter-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #818cf8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .counter-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #818cf8;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #818cf8;
         }
 
         .nav-buttons {
@@ -82,27 +99,82 @@
             background: var(--primary-hover);
         }
 
+        /* Главная область */
         main {
             flex-grow: 1;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
 
-        .hero-title {
-            font-size: 24px;
+        /* Секция Тетриса */
+        .tetris-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 340px;
+            width: 100%;
+        }
+
+        .tetris-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 12px;
+            font-size: 14px;
             font-weight: 700;
-            text-align: center;
-            color: #f0f6fc;
-            max-width: 600px;
-            line-height: 1.3;
+            color: var(--text-muted);
         }
 
+        .tetris-score span {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        #tetrisCanvas {
+            background: #0d1117;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* Сенсорные кнопки управления для мобилок */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            margin-top: 14px;
+        }
+
+        .ctrl-btn {
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .ctrl-btn:active {
+            background: var(--primary);
+        }
+
+        /* Секция профиля */
         .profile-container {
             display: none;
             width: 100%;
-            max-width: 360px;
+            max-width: 340px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
@@ -137,6 +209,7 @@
             margin-bottom: 18px;
         }
 
+        /* Выбор аватарки */
         .avatar-section {
             background: #0d1117;
             border: 1px solid var(--border-color);
@@ -169,14 +242,9 @@
             background: #21262d;
             font-size: 16px;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
-        .preset-btn:hover {
-            transform: scale(1.1);
-            border-color: var(--primary);
-        }
-
+        /* Модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -199,8 +267,9 @@
             border-radius: 14px;
             padding: 24px;
             width: 90%;
-            max-width: 340px;
+            max-width: 320px;
             position: relative;
+            text-align: center;
         }
 
         .modal-title {
@@ -217,6 +286,15 @@
             color: var(--text-muted);
             font-size: 20px;
             cursor: pointer;
+        }
+
+        .emoji-art-box {
+            font-size: 32px;
+            line-height: 1.1;
+            margin: 15px 0 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .form-group {
@@ -242,10 +320,6 @@
             outline: none;
         }
 
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
         .modal-switch {
             margin-top: 12px;
             font-size: 12px;
@@ -262,16 +336,58 @@
 </head>
 <body>
 
+    <!-- Шапка -->
     <header>
-        <div class="logo" onclick="showMainView()">Усынин Дима</div>
+        <!-- Реальный счётчик заходов -->
+        <div class="real-counter-badge">
+            <div class="counter-dot"></div>
+            <span>Визитов: <strong id="realCounter">...</strong></span>
+        </div>
+
         <div class="nav-buttons" id="navButtons"></div>
     </header>
 
+    <!-- Всплывающее окно со смайликами при входе -->
+    <div class="modal-overlay active" id="welcomeModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeWelcomeModal()">&times;</button>
+            <div class="modal-title">Приветствие</div>
+            
+            <div class="emoji-art-box">
+                <div>🟥</div>
+                <div>🟫</div>
+                <div>🟫🟫🟫</div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;" onclick="closeWelcomeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
     <main>
-        <div id="mainView" class="hero-title">
-            Сайт сделан Усыниным Димой
+        <!-- Тетрис игра -->
+        <div id="mainView" class="tetris-container">
+            <div class="tetris-header">
+                <div>ТЕТРИС</div>
+                <div class="tetris-score">Очки: <span id="scoreVal">0</span></div>
+            </div>
+
+            <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+
+            <button class="btn btn-primary" id="startBtn" onclick="toggleGame()" style="width: 100%; margin-top: 12px;">Старт / Пауза</button>
+
+            <!-- Кнопки управления для телефона -->
+            <div class="controls">
+                <button class="ctrl-btn" onclick="moveLeft()">◄</button>
+                <button class="ctrl-btn" onclick="rotate()">🔄</button>
+                <button class="ctrl-btn" onclick="moveRight()">►</button>
+                <div></div>
+                <button class="ctrl-btn" onclick="moveDown()">▼</button>
+                <div></div>
+            </div>
         </div>
 
+        <!-- Профиль пользователя -->
         <div id="profileView" class="profile-container">
             <div class="profile-avatar-display" id="profileAvatar">👤</div>
             <div class="profile-username" id="profileUsername">Логин</div>
@@ -295,6 +411,7 @@
         </div>
     </main>
 
+    <!-- Авторизация -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
             <button class="close-btn" onclick="closeAuthModal()">&times;</button>
@@ -319,14 +436,32 @@
     </div>
 
     <script>
+        function closeWelcomeModal() {
+            document.getElementById('welcomeModal').classList.remove('active');
+        }
+
+        // --- 1. РЕАЛЬНЫЙ СЧЁТЧИК ПОСЕЩЕНИЙ ---
+        async function fetchRealCounter() {
+            try {
+                const res = await fetch('https://api.counterapi.dev/v1/sjdghfla1-github-io/pageviews/up');
+                const data = await res.json();
+                if (data && data.count) {
+                    document.getElementById('realCounter').textContent = data.count;
+                } else {
+                    document.getElementById('realCounter').textContent = '1';
+                }
+            } catch (e) {
+                let localVisits = parseInt(localStorage.getItem('usynin_real_visits') || '0') + 1;
+                localStorage.setItem('usynin_real_visits', localVisits);
+                document.getElementById('realCounter').textContent = localVisits;
+            }
+        }
+        fetchRealCounter();
+
+        // --- 2. ЛОГИКА АВТОРИЗАЦИИ И ПРОФИЛЯ ---
         let users = JSON.parse(localStorage.getItem('usynin_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('usynin_currentUser')) || null;
         let isRegisterMode = false;
-
-        function init() {
-            updateNav();
-            showMainView();
-        }
 
         function updateNav() {
             const nav = document.getElementById('navButtons');
@@ -344,7 +479,7 @@
         }
 
         function showMainView() {
-            document.getElementById('mainView').style.display = 'block';
+            document.getElementById('mainView').style.display = 'flex';
             document.getElementById('profileView').style.display = 'none';
         }
 
@@ -401,8 +536,6 @@
 
         function closeAuthModal() {
             document.getElementById('authModal').classList.remove('active');
-            document.getElementById('authLogin').value = '';
-            document.getElementById('authPassword').value = '';
         }
 
         function toggleAuthMode(registerMode) {
@@ -424,12 +557,10 @@
             const password = document.getElementById('authPassword').value.trim();
 
             if (isRegisterMode) {
-                const userExists = users.some(u => u.login.toLowerCase() === login.toLowerCase());
-                if (userExists) {
+                if (users.some(u => u.login.toLowerCase() === login.toLowerCase())) {
                     alert('Пользователь с таким логином уже есть!');
                     return;
                 }
-
                 const newUser = { login, password, avatar: '😎' };
                 users.push(newUser);
                 localStorage.setItem('usynin_users', JSON.stringify(users));
@@ -456,7 +587,180 @@
             showMainView();
         }
 
-        init();
+        updateNav();
+
+        // --- 3. ИГРА ТЕТРИС ---
+        const canvas = document.getElementById('tetrisCanvas');
+        const ctx = canvas.getContext('2d');
+        const ROWS = 20;
+        const COLS = 10;
+        const BLOCK_SIZE = 20;
+
+        let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        let score = 0;
+        let gameInterval = null;
+        let isRunning = false;
+
+        const SHAPES = [
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 0], [1, 1, 1]], // T
+            [[1, 0, 0], [1, 1, 1]], // L
+            [[0, 0, 1], [1, 1, 1]], // J
+            [[0, 1, 1], [1, 0, 0]], // S
+            [[1, 1, 0], [0, 1, 1]]  // Z
+        ];
+
+        const COLORS = ['#00f0f0', '#f0f000', '#a000f0', '#f0a000', '#0000f0', '#00f000', '#f00000'];
+
+        let currentPiece = getRandomPiece();
+
+        function getRandomPiece() {
+            const idx = Math.floor(Math.random() * SHAPES.length);
+            return {
+                shape: SHAPES[idx],
+                color: COLORS[idx],
+                row: 0,
+                col: Math.floor(COLS / 2) - Math.ceil(SHAPES[idx][0].length / 2)
+            };
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c]) {
+                        ctx.fillStyle = board[r][c];
+                        ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                    }
+                }
+            }
+            drawPiece(currentPiece);
+        }
+
+        function drawPiece(piece) {
+            ctx.fillStyle = piece.color;
+            piece.shape.forEach((row, r) => {
+                row.forEach((value, c) => {
+                    if (value) {
+                        ctx.fillRect((piece.col + c) * BLOCK_SIZE, (piece.row + r) * BLOCK_SIZE, BLOCK_SIZE - 1, BLOCK_SIZE - 1);
+                    }
+                });
+            });
+        }
+
+        function isValidMove(piece, rowOffset, colOffset, newShape) {
+            const shape = newShape || piece.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c]) {
+                        let newRow = piece.row + r + rowOffset;
+                        let newCol = piece.col + c + colOffset;
+                        if (newRow >= ROWS || newCol < 0 || newCol >= COLS || (newRow >= 0 && board[newRow][newCol])) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function moveDown() {
+            if (!isRunning) return;
+            if (isValidMove(currentPiece, 1, 0)) {
+                currentPiece.row++;
+            } else {
+                lockPiece();
+                clearLines();
+                currentPiece = getRandomPiece();
+                if (!isValidMove(currentPiece, 0, 0)) {
+                    alert('Игра окончена! Ваши очки: ' + score);
+                    resetGame();
+                }
+            }
+            drawBoard();
+        }
+
+        function moveLeft() {
+            if (isRunning && isValidMove(currentPiece, 0, -1)) {
+                currentPiece.col--;
+                drawBoard();
+            }
+        }
+
+        function moveRight() {
+            if (isRunning && isValidMove(currentPiece, 0, 1)) {
+                currentPiece.col++;
+                drawBoard();
+            }
+        }
+
+        function rotate() {
+            if (!isRunning) return;
+            const rotated = currentPiece.shape[0].map((_, i) => currentPiece.shape.map(row => row[i]).reverse());
+            if (isValidMove(currentPiece, 0, 0, rotated)) {
+                currentPiece.shape = rotated;
+                drawBoard();
+            }
+        }
+
+        function lockPiece() {
+            currentPiece.shape.forEach((row, r) => {
+                row.forEach((val, c) => {
+                    if (val) {
+                        board[currentPiece.row + r][currentPiece.col + c] = currentPiece.color;
+                    }
+                });
+            });
+        }
+
+        function clearLines() {
+            let linesCleared = 0;
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (board[r].every(cell => cell !== 0)) {
+                    board.splice(r, 1);
+                    board.unshift(Array(COLS).fill(0));
+                    linesCleared++;
+                    r++;
+                }
+            }
+            if (linesCleared > 0) {
+                score += linesCleared * 100;
+                document.getElementById('scoreVal').textContent = score;
+            }
+        }
+
+        function toggleGame() {
+            if (isRunning) {
+                clearInterval(gameInterval);
+                isRunning = false;
+                document.getElementById('startBtn').textContent = 'Продолжить';
+            } else {
+                isRunning = true;
+                gameInterval = setInterval(moveDown, 500);
+                document.getElementById('startBtn').textContent = 'Пауза';
+            }
+        }
+
+        function resetGame() {
+            clearInterval(gameInterval);
+            board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+            score = 0;
+            document.getElementById('scoreVal').textContent = score;
+            isRunning = false;
+            currentPiece = getRandomPiece();
+            document.getElementById('startBtn').textContent = 'Старт';
+            drawBoard();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') moveLeft();
+            if (e.key === 'ArrowRight') moveRight();
+            if (e.key === 'ArrowDown') moveDown();
+            if (e.key === 'ArrowUp') rotate();
+        });
+
+        drawBoard();
     </script>
 </body>
 </html>
