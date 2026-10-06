@@ -20,6 +20,15 @@
             text-align: center;
             margin-bottom: 25px;
         }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+            margin-bottom: 15px;
+        }
         h1 { color: #38bdf8; font-size: 28px; margin-bottom: 5px; }
         .author { color: #f59e0b; font-size: 14px; font-weight: 600; }
         .dates { color: #94a3b8; font-size: 14px; margin-top: 5px; }
@@ -56,33 +65,69 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             border: 1px solid #334155;
             width: 100%;
-            max-width: 650px;
+            max-width: 700px;
             line-height: 1.6;
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        h2 { color: #38bdf8; font-size: 20px; margin-bottom: 12px; }
+        h2 { color: #38bdf8; font-size: 20px; margin-bottom: 15px; }
         p { color: #cbd5e1; margin-bottom: 12px; font-size: 15px; }
         
+        /* Стили для хроники */
         .timeline-item {
             border-left: 2px solid #38bdf8;
             padding-left: 15px;
-            margin-bottom: 15px;
-            position: relative;
+            margin-bottom: 20px;
         }
         .timeline-date { color: #facc15; font-weight: bold; font-size: 14px; }
         
-        ul { margin-left: 20px; color: #cbd5e1; margin-bottom: 12px; }
-        li { margin-bottom: 6px; }
+        /* Иллюстрации в тексте */
+        .content-img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 10px 0 15px 0;
+            border: 1px solid #334155;
+        }
 
+        /* Галерея */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .gallery-card {
+            background: #090d16;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .gallery-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .gallery-card img:hover {
+            transform: scale(1.05);
+        }
+        .gallery-title {
+            padding: 10px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        /* Викторина */
         .quiz-option {
             background: #090d16;
             border: 1px solid #334155;
             color: #fff;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: background 0.2s;
         }
@@ -97,6 +142,7 @@
 <body>
 
     <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Leonhard_Euler.jpg" alt="Портрет Эйлера" class="profile-img">
         <h1>🏛️ Леонард Эйлер</h1>
         <div class="author">Этот сайт сделал Дима Усынин</div>
         <div class="dates">15 апреля 1707 — 18 сентября 1783</div>
@@ -105,46 +151,69 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('bio')">Биография</button>
         <button class="tab-btn" onclick="openTab('achievements')">Открытия</button>
+        <button class="tab-btn" onclick="openTab('gallery')">Галерея</button>
         <button class="tab-btn" onclick="openTab('quiz')">Викторина</button>
     </div>
 
     <div class="card">
+        <!-- Вкладка: Биография -->
         <div id="bio" class="tab-content active">
             <h2>Главные этапы жизни</h2>
             
             <div class="timeline-item">
-                <div class="timeline-date">1707–1727: Ранние годы в Базеле</div>
-                <p>Родился в Базеле (Швейцария). В 13 лет поступил в Базельский университет, где его талант заметил знаменитый математик Иоганн Бернулли.</p>
+                <div class="timeline-date">1707–1727: Ранние годы в Швейцарии</div>
+                <p>Родился в Базеле. В 13 лет поступил в Базельский университет, где занимался под руководством Иоганна Бернулли.</p>
             </div>
 
             <div class="timeline-item">
                 <div class="timeline-date">1727–1741: Первый Петербургский период</div>
-                <p>По приглашению Российской академии наук переехал в Санкт-Петербург. Написал сотни работ по математике, физике и навигации.</p>
+                <p>По приглашению Академии наук переехал в Санкт-Петербург, где возглавил кафедры физики и математики.</p>
             </div>
 
             <div class="timeline-item">
                 <div class="timeline-date">1741–1766: Берлинский период</div>
-                <p>По приглашению короля Фридриха II Великого работал в Берлинской академии наук, возглавлял обсерваторию и написал важнейшие труды по анализу.</p>
+                <p>Работа по приглашению короля Пруссии Фридриха II. Возглавлял математический класс Берлинской академии.</p>
             </div>
 
             <div class="timeline-item">
-                <div class="timeline-date">1766–1783: Возвращение в Петербург и слепота</div>
-                <p>Вернулся в Россию по приглашению Екатерины II. Несмотря на то, что к 1771 году Эйлер полностью ослеп, он продолжал диктовать труды и совершать открытия до самого конца жизни.</p>
+                <div class="timeline-date">1766–1783: Возвращение в Россию</div>
+                <p>Вернулся в Санкт-Петербург по приглашению Екатерины II. Несмотря на то, что к 1771 году Эйлер полностью ослеп, он продолжал диктовать научные труды до конца жизни.</p>
             </div>
         </div>
 
+        <!-- Вкладка: Открытия -->
         <div id="achievements" class="tab-content">
             <h2>Вклад в науку</h2>
-            <p>Леонард Эйлер — один из самых продуктивных математиков в истории. Написал более 850 научных работ.</p>
             
-            <ul>
-                <li><b>Математические обозначения:</b> Ввёл символы f(x), e (число Эйлера), i (мнимая единица), π (пи) и знак суммы Σ.</li>
-                <li><b>Формула Эйлера:</b> Связала экспоненту с тригонометрией, а тождество e<sup>iπ</sup> + 1 = 0 считают красивейшей формулой в математике.</li>
-                <li><b>Теория графов:</b> Решил знаменитую задачу о семи Кёнигсбергских мостах, заложив основы топологии.</li>
-                <li><b>Механика и астрономия:</b> Разработал теорию движения Луны, планет и описал законы вращения твёрдого тела.</li>
-            </ul>
+            <p><b>Задача о 7 Кёнигсбергских мостах</b></p>
+            <p>Решая задачу о маршруте через городские мосты, Эйлер заложил основы теории графов и топологии.</p>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/7_bridges.svg/600px-7_bridges.svg.png" alt="Схема Кёнигсбергских мостов" class="content-img">
+
+            <p><b>Формула и тождество Эйлера</b></p>
+            <p>Формула e<sup>iπ</sup> + 1 = 0 объединяет пять фундаментальных математических констант и считается одной из самых красивых в математике.</p>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Euler_identity.svg/600px-Euler_identity.svg.png" alt="Тождество Эйлера" class="content-img" style="background:#fff; padding:10px;">
         </div>
 
+        <!-- Вкладка: Галерея -->
+        <div id="gallery" class="tab-content">
+            <h2>Изображения и память</h2>
+            <div class="gallery-grid">
+                <div class="gallery-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d7/Leonhard_Euler.jpg" alt="Портрет Эйлера">
+                    <div class="gallery-title">Портрет работы И. Э. Хандманна (1753)</div>
+                </div>
+                <div class="gallery-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/CHF_10_8_front.jpg/600px-CHF_10_8_front.jpg" alt="Банкнота 10 франков">
+                    <div class="gallery-title">Эйлер на швейцарской купюре 10 франков</div>
+                </div>
+                <div class="gallery-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/7_bridges.svg/600px-7_bridges.svg.png" alt="Мосты Кёнигсберга">
+                    <div class="gallery-title">Карта Кёнигсбергских мостов</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Викторина -->
         <div id="quiz" class="tab-content">
             <h2>Викторина: Знаете ли вы Эйлера?</h2>
             <p id="question-text">В какой стране родился Леонард Эйлер?</p>
