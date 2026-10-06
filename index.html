@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тетрис Сайт</title>
+    <title>Тетрис Сайт с Чатом</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -104,9 +104,10 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             padding: 15px;
+            gap: 15px;
         }
 
         /* Секция Тетриса */
@@ -168,6 +169,78 @@
 
         .ctrl-btn:active {
             background: var(--primary);
+        }
+
+        /* Секция ЧАТА */
+        .chat-container {
+            width: 100%;
+            max-width: 340px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            height: 200px;
+            overflow-y: auto;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chat-msg {
+            font-size: 12px;
+            word-break: break-word;
+        }
+
+        .chat-msg-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .chat-msg-author {
+            font-weight: 600;
+            color: #818cf8;
+        }
+
+        .chat-msg-time {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .chat-msg-text {
+            color: var(--text-color);
+            background: #21262d;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            line-height: 1.3;
+        }
+
+        .chat-input-box {
+            display: flex;
+            gap: 6px;
         }
 
         /* Секция профиля */
@@ -338,7 +411,6 @@
 
     <!-- Шапка -->
     <header>
-        <!-- Реальный счётчик заходов -->
         <div class="real-counter-badge">
             <div class="counter-dot"></div>
             <span>Визитов: <strong id="realCounter">...</strong></span>
@@ -365,26 +437,46 @@
 
     <!-- Основной контент -->
     <main>
-        <!-- Тетрис игра -->
-        <div id="mainView" class="tetris-container">
-            <div class="tetris-header">
-                <div>ТЕТРИС</div>
-                <div class="tetris-score">Очки: <span id="scoreVal">0</span></div>
+        <!-- Вид по умолчанию (Тетрис + Чат) -->
+        <div id="mainView" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
+            
+            <!-- Тетрис игра -->
+            <div class="tetris-container">
+                <div class="tetris-header">
+                    <div>ТЕТРИС</div>
+                    <div class="tetris-score">Очки: <span id="scoreVal">0</span></div>
+                </div>
+
+                <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+
+                <button class="btn btn-primary" id="startBtn" onclick="toggleGame()" style="width: 100%; margin-top: 12px;">Старт / Пауза</button>
+
+                <!-- Кнопки управления для телефона -->
+                <div class="controls">
+                    <button class="ctrl-btn" onclick="moveLeft()">◄</button>
+                    <button class="ctrl-btn" onclick="rotate()">🔄</button>
+                    <button class="ctrl-btn" onclick="moveRight()">►</button>
+                    <div></div>
+                    <button class="ctrl-btn" onclick="moveDown()">▼</button>
+                    <div></div>
+                </div>
             </div>
 
-            <canvas id="tetrisCanvas" width="200" height="400"></canvas>
+            <!-- Чат пользователей -->
+            <div class="chat-container">
+                <div class="chat-title">
+                    <span>ОБЩИЙ ЧАТ</span>
+                    <span style="font-size: 11px; font-weight: normal;">Онлайн</span>
+                </div>
 
-            <button class="btn btn-primary" id="startBtn" onclick="toggleGame()" style="width: 100%; margin-top: 12px;">Старт / Пауза</button>
+                <div class="chat-messages" id="chatMessages"></div>
 
-            <!-- Кнопки управления для телефона -->
-            <div class="controls">
-                <button class="ctrl-btn" onclick="moveLeft()">◄</button>
-                <button class="ctrl-btn" onclick="rotate()">🔄</button>
-                <button class="ctrl-btn" onclick="moveRight()">►</button>
-                <div></div>
-                <button class="ctrl-btn" onclick="moveDown()">▼</button>
-                <div></div>
+                <form class="chat-input-box" onsubmit="sendChatMessage(event)">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Напишите сообщение..." maxlength="200" required>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
             </div>
+
         </div>
 
         <!-- Профиль пользователя -->
@@ -407,6 +499,7 @@
                 </div>
             </div>
 
+            <button class="btn btn-outline" style="width: 100%; margin-bottom: 8px;" onclick="showMainView()">К игре и чату</button>
             <button class="btn btn-outline" style="width: 100%; color: #f87171; border-color: rgba(248, 113, 113, 0.3);" onclick="logout()">Выйти</button>
         </div>
     </main>
@@ -589,7 +682,98 @@
 
         updateNav();
 
-        // --- 3. ИГРА ТЕТРИС ---
+        // --- 3. ЧАТ ПОЛЬЗОВАТЕЛЕЙ ---
+        const chatChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('tetris_chat_channel') : null;
+
+        function getChatMessages() {
+            return JSON.parse(localStorage.getItem('usynin_chat_messages')) || [];
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            const messages = getChatMessages();
+            container.innerHTML = '';
+
+            if (messages.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 80px;">Сообщений пока нет. Напишите первым!</div>`;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const msgEl = document.createElement('div');
+                msgEl.className = 'chat-msg';
+                msgEl.innerHTML = `
+                    <div class="chat-msg-header">
+                        <span style="font-size: 13px;">${msg.avatar || '👤'}</span>
+                        <span class="chat-msg-author">${escapeHtml(msg.author)}</span>
+                        <span class="chat-msg-time">${msg.time}</span>
+                    </div>
+                    <div class="chat-msg-text">${escapeHtml(msg.text)}</div>
+                `;
+                container.appendChild(msgEl);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const author = currentUser ? currentUser.login : 'Гость';
+            let avatar = '👤';
+            if (currentUser && currentUser.avatar) {
+                avatar = currentUser.avatar.startsWith('http') ? '🖼️️' : currentUser.avatar;
+            }
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newMsg = {
+                id: Date.now(),
+                author: author,
+                avatar: avatar,
+                text: text,
+                time: timeStr
+            };
+
+            const messages = getChatMessages();
+            messages.push(newMsg);
+            if (messages.length > 50) messages.shift(); // Ограничение на 50 сообщений
+
+            localStorage.setItem('usynin_chat_messages', JSON.stringify(messages));
+            input.value = '';
+            renderChatMessages();
+
+            if (chatChannel) {
+                chatChannel.postMessage('update_chat');
+            }
+        }
+
+        if (chatChannel) {
+            chatChannel.onmessage = (event) => {
+                if (event.data === 'update_chat') {
+                    renderChatMessages();
+                }
+            };
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'usynin_chat_messages') {
+                renderChatMessages();
+            }
+        });
+
+        renderChatMessages();
+
+        // --- 4. ИГРА ТЕТРИС ---
         const canvas = document.getElementById('tetrisCanvas');
         const ctx = canvas.getContext('2d');
         const ROWS = 20;
