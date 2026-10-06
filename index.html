@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тетрис Сайт с Онлайн-Чатом</title>
-    <!-- Подключаем легкую библиотеку для онлайн-связи через WebSocket/MQTT -->
+    <title>Сайт Усынина Димы — Тетрис и Онлайн-Чат</title>
+    <!-- Подключение библиотеки для реального онлайн-чата через WebSocket/MQTT -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <style>
         :root {
@@ -47,6 +47,9 @@
             font-weight: 700;
             font-size: 16px;
             color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-buttons {
@@ -132,7 +135,7 @@
             display: block;
         }
 
-        /* Кнопки управления для телефона */
+        /* Кнопки управления для мобильных устройств */
         .controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -392,13 +395,13 @@
 </head>
 <body>
 
-    <!-- Шапка -->
+    <!-- Шапка с названием сайта -->
     <header>
-        <div class="header-logo">🎮 Тетрис</div>
+        <div class="header-logo">🎮 Сайт Усынина Димы</div>
         <div class="nav-buttons" id="navButtons"></div>
     </header>
 
-    <!-- Всплывающее окно со смайликами при входе -->
+    <!-- Всплывающее окно при входе -->
     <div class="modal-overlay active" id="welcomeModal">
         <div class="modal">
             <button class="close-btn" onclick="closeWelcomeModal()">&times;</button>
@@ -416,7 +419,7 @@
 
     <!-- Основной контент -->
     <main>
-        <!-- Вид по умолчанию (Тетрис + Чат) -->
+        <!-- Тетрис и Чат -->
         <div id="mainView" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;">
             
             <!-- Тетрис игра -->
@@ -430,7 +433,7 @@
 
                 <button class="btn btn-primary" id="startBtn" onclick="toggleGame()" style="width: 100%; margin-top: 12px;">Старт / Пауза</button>
 
-                <!-- Кнопки управления для телефона -->
+                <!-- Кнопки управления для мобильных систем -->
                 <div class="controls">
                     <button class="ctrl-btn" onclick="moveLeft()">◄</button>
                     <button class="ctrl-btn" onclick="rotate()">🔄</button>
@@ -441,7 +444,7 @@
                 </div>
             </div>
 
-            <!-- Чат пользователей -->
+            <!-- Реальный общий чат -->
             <div class="chat-container">
                 <div class="chat-title">ОБЩИЙ ЧАТ</div>
 
@@ -640,7 +643,7 @@
 
         updateNav();
 
-        // --- 2. РЕАЛЬНЫЙ ОНЛАЙН-ЧАТ МЕЖДУ ВСЕМИ УСТРОЙСТВАМИ (MQTT WebSocket) ---
+        // --- 2. РЕАЛЬНЫЙ ОНЛАЙН-ЧАТ (MQTT WebSocket) ---
         const CHAT_TOPIC = "usynin_tetris_global_chat_v1";
         let mqttClient = null;
         let chatMessages = JSON.parse(localStorage.getItem('usynin_chat_messages')) || [];
@@ -684,7 +687,6 @@
                 mqttClient.onMessageArrived = function (message) {
                     try {
                         const msg = JSON.parse(message.payloadString);
-                        // Проверка на дублирование по уникальному ID
                         if (!chatMessages.some(m => m.id === msg.id)) {
                             chatMessages.push(msg);
                             if (chatMessages.length > 50) chatMessages.shift();
@@ -703,7 +705,7 @@
                         mqttClient.subscribe(CHAT_TOPIC);
                     },
                     onFailure: function (err) {
-                        console.log("MQTT Подключение не удалось, чат работает локально", err);
+                        console.log("MQTT Подключение не удалось", err);
                     }
                 });
             } catch (e) {
@@ -734,13 +736,11 @@
                 time: timeStr
             };
 
-            // Добавляем к себе
             chatMessages.push(newMsg);
             if (chatMessages.length > 50) chatMessages.shift();
             localStorage.setItem('usynin_chat_messages', JSON.stringify(chatMessages));
             renderChatMessages();
 
-            // Отправляем через сеть всем остальным
             if (mqttClient && mqttClient.isConnected()) {
                 const message = new Paho.MQTT.Message(JSON.stringify(newMsg));
                 message.destinationName = CHAT_TOPIC;
