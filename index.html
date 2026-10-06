@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тетрис Сайт с Чатом</title>
+    <title>Тетрис Сайт с Онлайн-Чатом</title>
+    <!-- Подключаем легкую библиотеку для онлайн-связи через WebSocket/MQTT -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -31,7 +33,7 @@
             user-select: none;
         }
 
-        /* Шапка */
+        /* Шапка сайта */
         header {
             display: flex;
             justify-content: space-between;
@@ -41,26 +43,10 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Реальный счетчик посещений */
-        .real-counter-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.4);
-            color: #818cf8;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .counter-dot {
-            width: 7px;
-            height: 7px;
-            background-color: #818cf8;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #818cf8;
+        .header-logo {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-color);
         }
 
         .nav-buttons {
@@ -146,7 +132,7 @@
             display: block;
         }
 
-        /* Сенсорные кнопки управления для мобилок */
+        /* Кнопки управления для телефона */
         .controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -189,9 +175,6 @@
             font-weight: 700;
             color: var(--text-muted);
             margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .chat-messages {
@@ -411,11 +394,7 @@
 
     <!-- Шапка -->
     <header>
-        <div class="real-counter-badge">
-            <div class="counter-dot"></div>
-            <span>Визитов: <strong id="realCounter">...</strong></span>
-        </div>
-
+        <div class="header-logo">🎮 Тетрис</div>
         <div class="nav-buttons" id="navButtons"></div>
     </header>
 
@@ -464,15 +443,12 @@
 
             <!-- Чат пользователей -->
             <div class="chat-container">
-                <div class="chat-title">
-                    <span>ОБЩИЙ ЧАТ</span>
-                    <span style="font-size: 11px; font-weight: normal;">Онлайн</span>
-                </div>
+                <div class="chat-title">ОБЩИЙ ЧАТ</div>
 
                 <div class="chat-messages" id="chatMessages"></div>
 
                 <form class="chat-input-box" onsubmit="sendChatMessage(event)">
-                    <input type="text" id="chatInput" class="form-control" placeholder="Напишите сообщение..." maxlength="200" required>
+                    <input type="text" id="chatInput" class="form-control" placeholder="Напишите сообщение..." maxlength="200" required autocomplete="off">
                     <button type="submit" class="btn btn-primary">Отправить</button>
                 </form>
             </div>
@@ -533,25 +509,7 @@
             document.getElementById('welcomeModal').classList.remove('active');
         }
 
-        // --- 1. РЕАЛЬНЫЙ СЧЁТЧИК ПОСЕЩЕНИЙ ---
-        async function fetchRealCounter() {
-            try {
-                const res = await fetch('https://api.counterapi.dev/v1/sjdghfla1-github-io/pageviews/up');
-                const data = await res.json();
-                if (data && data.count) {
-                    document.getElementById('realCounter').textContent = data.count;
-                } else {
-                    document.getElementById('realCounter').textContent = '1';
-                }
-            } catch (e) {
-                let localVisits = parseInt(localStorage.getItem('usynin_real_visits') || '0') + 1;
-                localStorage.setItem('usynin_real_visits', localVisits);
-                document.getElementById('realCounter').textContent = localVisits;
-            }
-        }
-        fetchRealCounter();
-
-        // --- 2. ЛОГИКА АВТОРИЗАЦИИ И ПРОФИЛЯ ---
+        // --- 1. ЛОГИКА АВТОРИЗАЦИИ И ПРОФИЛЯ ---
         let users = JSON.parse(localStorage.getItem('usynin_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('usynin_currentUser')) || null;
         let isRegisterMode = false;
@@ -682,12 +640,10 @@
 
         updateNav();
 
-        // --- 3. ЧАТ ПОЛЬЗОВАТЕЛЕЙ ---
-        const chatChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('tetris_chat_channel') : null;
-
-        function getChatMessages() {
-            return JSON.parse(localStorage.getItem('usynin_chat_messages')) || [];
-        }
+        // --- 2. РЕАЛЬНЫЙ ОНЛАЙН-ЧАТ МЕЖДУ ВСЕМИ УСТРОЙСТВАМИ (MQTT WebSocket) ---
+        const CHAT_TOPIC = "usynin_tetris_global_chat_v1";
+        let mqttClient = null;
+        let chatMessages = JSON.parse(localStorage.getItem('usynin_chat_messages')) || [];
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -696,15 +652,14 @@
         function renderChatMessages() {
             const container = document.getElementById('chatMessages');
             if (!container) return;
-            const messages = getChatMessages();
             container.innerHTML = '';
 
-            if (messages.length === 0) {
+            if (chatMessages.length === 0) {
                 container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 80px;">Сообщений пока нет. Напишите первым!</div>`;
                 return;
             }
 
-            messages.forEach(msg => {
+            chatMessages.forEach(msg => {
                 const msgEl = document.createElement('div');
                 msgEl.className = 'chat-msg';
                 msgEl.innerHTML = `
@@ -721,6 +676,41 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        function initOnlineChat() {
+            try {
+                const clientId = "client_" + Math.random().toString(36).substring(2, 10);
+                mqttClient = new Paho.MQTT.Client("broker.emqx.io", 8084, clientId);
+
+                mqttClient.onMessageArrived = function (message) {
+                    try {
+                        const msg = JSON.parse(message.payloadString);
+                        // Проверка на дублирование по уникальному ID
+                        if (!chatMessages.some(m => m.id === msg.id)) {
+                            chatMessages.push(msg);
+                            if (chatMessages.length > 50) chatMessages.shift();
+                            localStorage.setItem('usynin_chat_messages', JSON.stringify(chatMessages));
+                            renderChatMessages();
+                        }
+                    } catch (e) {
+                        console.error("Ошибка чтения сообщения", e);
+                    }
+                };
+
+                mqttClient.connect({
+                    useSSL: true,
+                    timeout: 5,
+                    onSuccess: function () {
+                        mqttClient.subscribe(CHAT_TOPIC);
+                    },
+                    onFailure: function (err) {
+                        console.log("MQTT Подключение не удалось, чат работает локально", err);
+                    }
+                });
+            } catch (e) {
+                console.error("Ошибка инициализации онлайн чата", e);
+            }
+        }
+
         function sendChatMessage(e) {
             e.preventDefault();
             const input = document.getElementById('chatInput');
@@ -730,50 +720,40 @@
             const author = currentUser ? currentUser.login : 'Гость';
             let avatar = '👤';
             if (currentUser && currentUser.avatar) {
-                avatar = currentUser.avatar.startsWith('http') ? '🖼️️' : currentUser.avatar;
+                avatar = currentUser.avatar.startsWith('http') ? '🖼' : currentUser.avatar;
             }
 
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             const newMsg = {
-                id: Date.now(),
+                id: Date.now() + '_' + Math.random().toString(36).substring(2, 7),
                 author: author,
                 avatar: avatar,
                 text: text,
                 time: timeStr
             };
 
-            const messages = getChatMessages();
-            messages.push(newMsg);
-            if (messages.length > 50) messages.shift(); // Ограничение на 50 сообщений
-
-            localStorage.setItem('usynin_chat_messages', JSON.stringify(messages));
-            input.value = '';
+            // Добавляем к себе
+            chatMessages.push(newMsg);
+            if (chatMessages.length > 50) chatMessages.shift();
+            localStorage.setItem('usynin_chat_messages', JSON.stringify(chatMessages));
             renderChatMessages();
 
-            if (chatChannel) {
-                chatChannel.postMessage('update_chat');
+            // Отправляем через сеть всем остальным
+            if (mqttClient && mqttClient.isConnected()) {
+                const message = new Paho.MQTT.Message(JSON.stringify(newMsg));
+                message.destinationName = CHAT_TOPIC;
+                mqttClient.send(message);
             }
-        }
 
-        if (chatChannel) {
-            chatChannel.onmessage = (event) => {
-                if (event.data === 'update_chat') {
-                    renderChatMessages();
-                }
-            };
+            input.value = '';
         }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'usynin_chat_messages') {
-                renderChatMessages();
-            }
-        });
 
         renderChatMessages();
+        initOnlineChat();
 
-        // --- 4. ИГРА ТЕТРИС ---
+        // --- 3. ИГРА ТЕТРИС ---
         const canvas = document.getElementById('tetrisCanvas');
         const ctx = canvas.getContext('2d');
         const ROWS = 20;
