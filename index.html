@@ -30,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* Шапка */
         header {
             display: flex;
             justify-content: space-between;
@@ -45,35 +44,6 @@
             font-weight: 700;
             color: var(--primary);
             cursor: pointer;
-            letter-spacing: 0.3px;
-        }
-
-        .online-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(35, 134, 54, 0.15);
-            border: 1px solid rgba(46, 160, 67, 0.4);
-            color: #3fb950;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .online-dot {
-            width: 7px;
-            height: 7px;
-            background-color: #3fb950;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #3fb950;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
         }
 
         .nav-buttons {
@@ -112,7 +82,6 @@
             background: var(--primary-hover);
         }
 
-        /* Главная область */
         main {
             flex-grow: 1;
             display: flex;
@@ -122,7 +91,7 @@
         }
 
         .hero-title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             text-align: center;
             color: #f0f6fc;
@@ -130,7 +99,6 @@
             line-height: 1.3;
         }
 
-        /* Секция профиля */
         .profile-container {
             display: none;
             width: 100%;
@@ -169,7 +137,6 @@
             margin-bottom: 18px;
         }
 
-        /* Выбор аватарки */
         .avatar-section {
             background: #0d1117;
             border: 1px solid var(--border-color);
@@ -210,7 +177,6 @@
             border-color: var(--primary);
         }
 
-        /* Общие модальные окна */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -235,13 +201,12 @@
             width: 90%;
             max-width: 340px;
             position: relative;
-            text-align: center;
         }
 
         .modal-title {
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
         }
 
         .close-btn {
@@ -285,6 +250,7 @@
             margin-top: 12px;
             font-size: 12px;
             color: var(--text-muted);
+            text-align: center;
         }
 
         .modal-switch span {
@@ -292,55 +258,27 @@
             cursor: pointer;
             font-weight: 600;
         }
-
-        /* Стиль для всплывающего окна при входе */
-        .welcome-emoji-banner {
-            font-size: 40px;
-            margin: 10px 0;
-            line-height: 1.2;
-        }
-
-        .welcome-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 18px;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Шапка -->
     <header>
         <div class="logo" onclick="showMainView()">Усынин Дима</div>
-
-        <!-- Счётчик онлайна -->
-        <div class="online-badge">
-            <div class="online-dot"></div>
-            <span>Онлайн: <strong id="onlineCounter">14</strong></span>
-        </div>
-
-        <div class="nav-buttons" id="navButtons">
-            <!-- Кнопки JS -->
-        </div>
+        <div class="nav-buttons" id="navButtons"></div>
     </header>
 
-    <!-- Основной контент -->
     <main>
-        <!-- Главный экран -->
         <div id="mainView" class="hero-title">
             Сайт сделан Усыниным Димой
         </div>
 
-        <!-- Профиль пользователя -->
         <div id="profileView" class="profile-container">
             <div class="profile-avatar-display" id="profileAvatar">👤</div>
             <div class="profile-username" id="profileUsername">Логин</div>
             <div class="profile-role">Участник</div>
 
-            <!-- Смена аватарки -->
             <div class="avatar-section">
                 <h4>Выберите аватарку:</h4>
-                
                 <div class="preset-avatars">
                     <button class="preset-btn" onclick="setPresetAvatar('😎')">😎</button>
                     <button class="preset-btn" onclick="setPresetAvatar('🚀')">🚀</button>
@@ -348,7 +286,6 @@
                     <button class="preset-btn" onclick="setPresetAvatar('👾')">👾</button>
                     <button class="preset-btn" onclick="setPresetAvatar('🐱')">🐱</button>
                 </div>
-
                 <div class="form-group" style="margin-bottom: 0;">
                     <input type="text" id="avatarUrlInput" class="form-control" placeholder="Ссылка на фото..." onchange="setImageAvatar(this.value)">
                 </div>
@@ -358,26 +295,6 @@
         </div>
     </main>
 
-    <!-- ВСПЛЫВАЮЩЕЕ ОКНО ПРИ ВХОДЕ -->
-    <div class="modal-overlay active" id="welcomeModal">
-        <div class="modal">
-            <button class="close-btn" onclick="closeWelcomeModal()">&times;</button>
-            <div class="modal-title">Добро пожаловать!</div>
-            
-            <!-- Здесь находятся смайлы и текст баннера -->
-            <div class="welcome-emoji-banner">
-                👋 🔥 😎
-            </div>
-            
-            <div class="welcome-text">
-                Привет! Ты зашёл на сайт Димы Усынина.
-            </div>
-
-            <button class="btn btn-primary" style="width: 100%;" onclick="closeWelcomeModal()">Продолжить</button>
-        </div>
-    </div>
-
-    <!-- Модальное окно (Вход / Регистрация) -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
             <button class="close-btn" onclick="closeAuthModal()">&times;</button>
@@ -409,35 +326,10 @@
         function init() {
             updateNav();
             showMainView();
-            initOnlineCounter();
         }
-
-        // Закрытие приветственного поп-апа
-        function closeWelcomeModal() {
-            document.getElementById('welcomeModal').classList.remove('active');
-        }
-
-        // Логика счётчика онлайна
-        function initOnlineCounter() {
-            let onlineVal = parseInt(localStorage.getItem('usynin_online_val')) || 14;
-            let lastUpdate = parseInt(localStorage.getItem('usynin_online_time')) || 0;
-            let now = Date.now();
-
-            if (now - lastUpdate > 8000) {
-                let change = Math.floor(Math.random() * 3) - 1;
-                onlineVal = Math.max(5, onlineVal + change);
-                localStorage.setItem('usynin_online_val', onlineVal);
-                localStorage.setItem('usynin_online_time', now);
-            }
-
-            document.getElementById('onlineCounter').textContent = onlineVal;
-        }
-
-        setInterval(initOnlineCounter, 10000);
 
         function updateNav() {
             const nav = document.getElementById('navButtons');
-
             if (currentUser) {
                 nav.innerHTML = `
                     <button class="btn btn-outline" onclick="showProfileView()">${currentUser.login}</button>
@@ -458,10 +350,8 @@
 
         function showProfileView() {
             if (!currentUser) return;
-
             document.getElementById('mainView').style.display = 'none';
             document.getElementById('profileView').style.display = 'block';
-            
             document.getElementById('profileUsername').textContent = currentUser.login;
             renderAvatar();
         }
@@ -497,7 +387,6 @@
 
         function saveCurrentUserData() {
             localStorage.setItem('usynin_currentUser', JSON.stringify(currentUser));
-            
             const userIndex = users.findIndex(u => u.login.toLowerCase() === currentUser.login.toLowerCase());
             if (userIndex !== -1) {
                 users[userIndex].avatar = currentUser.avatar;
